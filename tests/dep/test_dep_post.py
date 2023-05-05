@@ -6,7 +6,6 @@ from typing import Dict
 import requests
 
 
-
 def test(base_url: str, api_key: str, geojson_path: str):
     url = f"{base_url}/analyze"
     headers = {
@@ -20,8 +19,8 @@ def test(base_url: str, api_key: str, geojson_path: str):
 
     # Define the data to be sent in the request body
     data = {
-        "start": "2023_01",
-        "stop": "2023_02",
+        "start": "2022_01",
+        "stop": "2023_01",
         "target_geojson": geometry_str
     }
 

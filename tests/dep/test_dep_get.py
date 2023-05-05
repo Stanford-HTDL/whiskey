@@ -25,5 +25,5 @@ def test(base_url: str, api_key: str, uid: str):
 if __name__ == "__main__":
     base_url: str = os.environ["BASE_URL"]
     api_key = os.environ["API_KEY"]
-    uid = os.environ["ORDER_UID"]
+    uid = os.environ["ANALYSIS_UID"]
     test(base_url=base_url, api_key=api_key, uid=uid)
