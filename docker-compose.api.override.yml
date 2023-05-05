@@ -1,0 +1,33 @@
+name: api-config
+
+services:
+
+  api:
+    build:
+      context: .
+      dockerfile: api.Dockerfile
+    restart: always
+    environment:
+      - APP_BROKER_URI=${APP_BROKER_URI}
+      - APP_BACKEND_URI=${APP_BACKEND_URI}
+      - API_KEYS_PATH=${API_KEYS_PATH}
+      - APP_TITLE=${APP_TITLE}
+      - APP_DESCRIPTION=${APP_DESCRIPTION}
+      - APP_VERSION=${APP_VERSION}
+      - CELERY_APP_NAME=${CELERY_APP_NAME}
+      - CELERY_APP_INCLUDE=${CELERY_APP_INCLUDE}
+      - MODULE_NAME=${APP_MODULE_NAME}
+    ports:
+      - 80:80
+    networks:
+      - bridge-net
+
+networks:
+
+  traefik-public:
+    name: traefik_public
+    external: false
+
+  bridge-net:
+    name: bridge_net  
+    external: true
