@@ -1,1 +1,13 @@
 .git/
+
+__pycache__/
+logs/
+
+env*/
+
+*.env
+*.Python
+*.log
+*.rdb
+*.dump
+*.conf
