@@ -20,7 +20,8 @@ services:
     ports:
       - 80:80
     networks:
-      - bridge-net
+      # - bridge-net
+      - traefik-public
 
 networks:
 
@@ -28,6 +29,6 @@ networks:
     name: traefik_public
     external: false
 
-  bridge-net:
-    name: bridge_net  
-    external: true
+  # bridge-net:
+  #   name: bridge_net  
+  #   external: true
