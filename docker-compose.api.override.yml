@@ -29,6 +29,6 @@ networks:
     name: traefik_public
     external: false
 
-  # bridge-net:
-  #   name: bridge_net  
-  #   external: true
+  bridge-net:
+    name: bridge_net
+    driver: bridge
