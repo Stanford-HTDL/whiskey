@@ -1,7 +1,7 @@
 __author__ = "Richard Correro (richard@richardcorrero.com)"
 
-import json
 import os
+from datetime import datetime
 from typing import Any, Dict, List
 
 from celery.result import AsyncResult
@@ -11,7 +11,7 @@ from starlette.responses import RedirectResponse
 
 from .celery_config.celery import celery_app
 from .models import TargetParams
-from .utils import generate_uid, get_api_keys
+from .utils import get_api_keys, get_datetime
 
 API_KEYS_PATH: str = os.environ["API_KEYS_PATH"]
 APP_TITLE: str = os.environ["APP_TITLE"]
@@ -49,6 +49,20 @@ async def run_analysis(params: TargetParams) -> dict:
     # else:
     #     uid = params.process_uid    
     uid = params.process_uid
+
+    start: str = params.start
+    stop: str = params.stop
+
+    # Validate dates are in correct format (`%Y_%m`)
+
+    start_datetime: datetime = get_datetime(start)
+    start_formatted: str = start_datetime.strftime('%Y_%m')
+
+    stop_datetime: datetime = get_datetime(stop)
+    stop_formatted: str = stop_datetime.strftime('%Y_%m')
+
+    params.start = start_formatted
+    params.stop = stop_formatted
 
     # target_geojson_dict: dict = json.loads(params.target_geojson)
 

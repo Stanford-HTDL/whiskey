@@ -3,7 +3,10 @@ __author__ = "Richard Correro (richard@richardcorrero.com)"
 import json
 import random
 import string
+from datetime import datetime
 from typing import List, Optional
+
+from .exceptions import MalformedDateStringError
 
 
 def get_api_keys(api_keys_path: str) -> List[str]:
@@ -22,3 +25,13 @@ def generate_uid(uid_len: Optional[int] = 64) -> str:
     )
 
     return uid
+
+
+def get_datetime(time_str: str) -> datetime:
+    try: 
+        dt: datetime = datetime.strptime(time_str[:7], '%Y_%m')
+    except:
+        raise MalformedDateStringError(
+            f"Time string must be in %Y_%m format. Received string {time_str}."
+        )
+    return dt

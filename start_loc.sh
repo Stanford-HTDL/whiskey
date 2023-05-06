@@ -17,6 +17,10 @@ done
 # Create Docker network(s)
 # docker network create <NETWORK NAME>
 
+# Start message queue and backend
+# Pass all command-line parameters using `$@` 
+docker compose -f docker-compose.messaging.yml up --detach "$@"
+
 # Start Uvicorn
 # Pass all command-line parameters using `$@` 
 docker compose -f docker-compose.api.override.yml up --detach "$@"

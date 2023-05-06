@@ -21,6 +21,10 @@ done
 # Pass all command-line parameters using `$@` 
 docker compose -f docker-compose.traefik.yml up --detach "$@"
 
+# Start message queue and backend
+# Pass all command-line parameters using `$@` 
+docker compose -f docker-compose.messaging.yml up --detach "$@"
+
 # Start Uvicorn
 # Pass all command-line parameters using `$@`
 docker compose -f docker-compose.api.yml up --detach "$@"

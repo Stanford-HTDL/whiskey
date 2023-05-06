@@ -19,8 +19,8 @@ def test(base_url: str, api_key: str, geojson_path: str):
 
     # Define the data to be sent in the request body
     data = {
-        "start": "2021_01",
-        "stop": "2022_01",
+        "start": "2018_01",
+        "stop": "2018_03",
         "target_geojson": geometry_str
     }
 
