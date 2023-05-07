@@ -55,14 +55,32 @@ async def run_analysis(params: TargetParams) -> dict:
 
     # Validate dates are in correct format (`%Y_%m`)
 
-    start_datetime: datetime = get_datetime(start)
-    start_formatted: str = start_datetime.strftime('%Y_%m')
-
-    stop_datetime: datetime = get_datetime(stop)
-    stop_formatted: str = stop_datetime.strftime('%Y_%m')
+    try:
+        start_datetime: datetime = get_datetime(start)
+        start_formatted: str = start_datetime.strftime('%Y_%m')
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"start must be in %Y_%m format. Received value of {params.start}."
+        )
+    try:
+        stop_datetime: datetime = get_datetime(stop)
+        stop_formatted: str = stop_datetime.strftime('%Y_%m')
+    except:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"stop must be in %Y_%m format. Received value of {params.stop}."
+        )
 
     params.start = start_formatted
     params.stop = stop_formatted
+
+    # Verify bbox_threshold lies in range `[0,1]`
+    if params.bbox_threshold > 1.0 or params.bbox_threshold < 0.0:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"bbox_threshold must lie in range [0,1]. Received value of {params.bbox_threshold}."
+        )
 
     # target_geojson_dict: dict = json.loads(params.target_geojson)
 
