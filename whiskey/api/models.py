@@ -25,7 +25,7 @@ class TargetParams(BaseModel):
         default=default_bbox_threshold, title="Bounding Box Score Threshold",
         description="Value used to determine whether to consider a predicted bounded box a positive. Value must lie in the range `[0,1]`."
     )
-    process_uid: str = Field(
-        default_factory=generate_uid, title="Process UID", 
-        description="(Optional) UID which will be assigned to this analysis. Used to check its status via the `/status` endpoint."
-    ) # User may provide a process UID
+    # process_uid: str = Field(
+    #     default_factory=generate_uid, title="Process UID", 
+    #     description="(Optional) UID which will be assigned to this analysis. Used to check its status via the `/status` endpoint."
+    # ) # User may provide a process UID

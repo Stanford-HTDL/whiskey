@@ -2,8 +2,9 @@ __author__ = "Richard Correro (richard@richardcorrero.com)"
 
 import os
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, List
 
+from celery.app.control import Inspect
 from celery.result import AsyncResult
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -11,7 +12,8 @@ from starlette.responses import RedirectResponse
 
 from .celery_config.celery import celery_app
 from .models import TargetParams
-from .utils import get_api_keys, get_datetime
+from .utils import (get_api_keys, get_datetime, hash_string, is_json,
+                    is_task_known)
 
 API_KEYS_PATH: str = os.environ["API_KEYS_PATH"]
 APP_TITLE: str = os.environ["APP_TITLE"]
@@ -23,8 +25,6 @@ valid_api_keys: List[str] = get_api_keys(api_keys_path=API_KEYS_PATH)
 app = FastAPI(title=APP_TITLE, description=APP_DESCRIPTION, version=APP_VERSION)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")  # use token authentication
-
-task_uids: Dict = dict() # O(1) lookup time
 
 
 def api_key_auth(api_key: str = Depends(oauth2_scheme)) -> None:
@@ -41,19 +41,26 @@ async def redirect() -> RedirectResponse:
 
 
 @app.post("/analyze", dependencies=[Depends(api_key_auth)])
-async def run_analysis(params: TargetParams) -> dict:    
-    # if params.process_uid is None:
-    #     # Generate a UID for the task
-    #     uid: str = generate_uid()
-    #     params.process_uid = uid
-    # else:
-    #     uid = params.process_uid    
-    uid = params.process_uid
+async def run_analysis(params: TargetParams) -> dict:
+    if not is_json(json_str=params.target_geojson):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"target_geojson must be valid json."
+        )
+
+    # uid = params.process_uid
+    uid: str = hash_string(params.target_geojson)
+
+    inspect_obj: Inspect = celery_app.control.inspect()
+    task_known: bool = is_task_known(task_uid=uid, inspect_obj=inspect_obj)
+    if task_known:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"A task has already been submitted using this target_geojson with uid {uid}. Please wait until this task has completed before resubmitting."
+        )
 
     start: str = params.start
     stop: str = params.stop
-
-    # Validate dates are in correct format (`%Y_%m`)
 
     try:
         start_datetime: datetime = get_datetime(start)
@@ -81,21 +88,15 @@ async def run_analysis(params: TargetParams) -> dict:
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"bbox_threshold must lie in range [0,1]. Received value of {params.bbox_threshold}."
         )
-
-    # target_geojson_dict: dict = json.loads(params.target_geojson)
-
-    # kwargs: dict = {**params.dict(), "target_geojson_dict": target_geojson_dict}
     
-    celery_app.send_task(name="analyze", kwargs=params.dict(), task_id=uid)
-    # # Create a Celery task and pass the parameters to it
-    # task.apply_async(
-    #     kwargs=params.dict(), task_id=uid
-    # )
+    kwargs = {**params.dict(), "process_uid": uid}
+    
+    celery_app.send_task(name="analyze", kwargs=kwargs, task_id=uid)
     
     # Generate the URL for the second endpoint
     result_url = f"/status/{uid}"
 
-    task_uids[uid] = "running"
+    # task_uids[uid] = "running"
     
     return {"url": result_url, "uid": uid}
 
@@ -113,18 +114,19 @@ async def get_status(uid: str) -> dict:
     -------
     `dict`
     """
+    inspect_obj: Inspect = celery_app.control.inspect()
+    task_known: bool = is_task_known(task_uid=uid, inspect_obj=inspect_obj)
+
     # Check if the task is completed
     task: AsyncResult = celery_app.AsyncResult(uid)
     if task.ready():
         # Task is completed, return the result(s)
         if task.successful():
             result: Any = task.result
-            task_uids[uid] = "completed"
             return {"status": "completed", "result": result}
         else:
-            task_uids[uid] = "failed"
             return {"status": "failed"}
-    elif uid in task_uids:
+    elif task_known:
         return {"status": "running"}
     else:
         return {"status": f"unknown uid: {uid}"}

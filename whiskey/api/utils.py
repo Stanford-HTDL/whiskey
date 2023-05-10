@@ -1,12 +1,49 @@
 __author__ = "Richard Correro (richard@richardcorrero.com)"
 
+import hashlib
 import json
 import random
 import string
 from datetime import datetime
 from typing import List, Optional
 
+from celery.app.control import Inspect
+
 from .exceptions import MalformedDateStringError
+
+
+def is_task_known(task_uid: str, inspect_obj: Inspect) -> bool:
+    task_dicts: dict = inspect_obj.query_task(task_uid)
+    if task_dicts is not None:
+        for _, task_dict in task_dicts.items():
+            if bool(task_dict) and task_uid in task_dict.keys():
+                return True
+    return False
+
+
+def is_json(json_str: str) -> bool:
+  try:
+    json.loads(json_str)
+  except ValueError:
+    return False
+  return True
+
+
+def hash_string(string: str) -> str:
+    """Hash a string using the SHA-256 algorithm."""
+    # Encode the string to bytes
+    string_bytes = string.encode("utf-8")
+
+    # Create a hash object using the SHA-256 algorithm
+    hash_object = hashlib.sha256()
+
+    # Update the hash object with the bytes of the string
+    hash_object.update(string_bytes)
+
+    # Get the hashed value as a hexadecimal string
+    hashed_string = hash_object.hexdigest()
+
+    return hashed_string
 
 
 def get_api_keys(api_keys_path: str) -> List[str]:

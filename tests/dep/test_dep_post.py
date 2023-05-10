@@ -19,10 +19,10 @@ def test(base_url: str, api_key: str, geojson_path: str):
 
     # Define the data to be sent in the request body
     data = {
-        "start": "2020_01",
-        "stop": "2020_09",
+        "start": "2018_02",
+        "stop": "2023_05",
         "target_geojson": geometry_str,
-        "bbox_threshold": 0.0
+        "bbox_threshold": 0.02
     }
 
     # Send the POST request with headers and data
@@ -35,7 +35,7 @@ def test(base_url: str, api_key: str, geojson_path: str):
         print(response.json())
     else:
         print("POST request failed with status code:", response.status_code)
-        print(response.json())
+        # print(response.json())
 
 
 if __name__ == "__main__":
