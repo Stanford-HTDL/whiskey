@@ -17,6 +17,10 @@ services:
       - CELERY_APP_NAME=${CELERY_APP_NAME}
       - CELERY_APP_INCLUDE=${CELERY_APP_INCLUDE}
       - MODULE_NAME=${APP_MODULE_NAME}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_STORE_DB_INDEX=${REDIS_STORE_DB_INDEX}
+
     ports:
       - 80:80
     networks:

@@ -5,19 +5,26 @@ import json
 import random
 import string
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from celery.app.control import Inspect
 
 from .exceptions import MalformedDateStringError
 
 
-def is_task_known(task_uid: str, inspect_obj: Inspect) -> bool:
-    task_dicts: dict = inspect_obj.query_task(task_uid)
-    if task_dicts is not None:
-        for _, task_dict in task_dicts.items():
-            if bool(task_dict) and task_uid in task_dict.keys():
-                return True
+def is_task_known(task_id: str, inspect_obj: Inspect) -> bool:
+    scheduled_dict: Union[dict, None] = inspect_obj.scheduled()
+    active_dict: Union[dict, None] = inspect_obj.active()
+    if scheduled_dict is not None:
+        tasks_dict: dict = scheduled_dict
+    if active_dict is not None:
+        task_dict: dict = {**active_dict, **tasks_dict}
+    tasks_ids: set = set()
+    for key, task_dict in tasks_dict.items():
+        for task in task_dict[key]:
+            tasks_ids.add(task['id'])
+    if task_id in tasks_ids:
+        return True
     return False
 
 
