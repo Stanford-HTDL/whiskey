@@ -22,7 +22,7 @@ class TargetParams(BaseModel):
     # )
     target_geojsons: List[str] | None = Field(
         default=[geojson_str], title="List of GeoJSONs", 
-        description="List of GeoJSONs (encoded as strings) demarcating the region for which media will be created."
+        description="List of GeoJSONs (encoded as strings) demarcating the region for analysis."
     )
     bbox_threshold: float = Field(
         default=default_bbox_threshold, title="Bounding Box Score Threshold",
