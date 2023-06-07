@@ -1,0 +1,89 @@
+Module Documentation: main.py
+
+This module contains a FastAPI application that provides endpoints for analyzing and processing data. It interacts with Redis for task management and Celery for task execution.
+
+Author:
+- Richard Correro (richard@richardcorrero.com)
+
+Dependencies:
+- json
+- os
+- datetime from datetime
+- Any, List, Tuple, Union from typing
+- redis
+- AsyncResult from celery.result
+- gen_unique_id from celery.utils
+- Depends, FastAPI, HTTPException, status from fastapi
+- OAuth2PasswordBearer from fastapi.security
+- RedirectResponse from starlette.responses
+
+Environment Variables:
+- API_KEYS_PATH: Path to the file containing valid API keys.
+- APP_TITLE: Title of the FastAPI application.
+- APP_DESCRIPTION: Description of the FastAPI application.
+- APP_VERSION: Version of the FastAPI application.
+- REDIS_HOST: Redis server host.
+- REDIS_PORT: Redis server port.
+- REDIS_STORE_DB_INDEX: Redis database index for storing task information.
+
+Functions:
+- api_key_auth(api_key: str = Depends(oauth2_scheme)) -> None:
+  This function is a dependency that validates the API key provided in the request header.
+  It raises an HTTPException with status code 401 if the API key is not valid.
+
+- redirect() -> RedirectResponse:
+  This function is the root endpoint that redirects to the "/redoc" endpoint.
+
+- run_analysis(params: TargetParams, api_key: str = Depends(oauth2_scheme)) -> dict:
+  This function is the "/analyze" endpoint that processes the analysis task.
+  It accepts a JSON payload containing target parameters and an API key.
+  It validates the target_geojson field and checks for duplicate tasks.
+  It generates a unique ID for the task, stores task information in Redis, and sends the task to Celery for execution.
+  It returns a JSON response containing the URL for the status endpoint and the task UID.
+
+- make_media(params: MediaParams, api_key: str = Depends(oauth2_scheme)) -> dict:
+  This function is the "/media" endpoint that processes the media task.
+  It accepts a JSON payload containing media parameters and an API key.
+  It validates the target_geojson field and checks for duplicate tasks.
+  It generates a unique ID for the task, stores task information in Redis, and sends the task to Celery for execution.
+  It returns a JSON response containing the URL for the status endpoint and the task UID.
+
+- get_status(uid: str, api_key: str = Depends(oauth2_scheme)) -> dict:
+  This function is the "/status/{uid}" endpoint that retrieves the status of a task.
+  It accepts the task UID and an API key.
+  It checks if the task is completed or running and returns the corresponding status.
+  If the task is completed, it returns the result of the task if successful, or a failure status if not.
+
+Variables:
+- valid_api_keys: List[str]
+  A list of valid API keys loaded from the API_KEYS_PATH file.
+
+- app: FastAPI
+  The FastAPI application instance with the specified title, description, and version.
+
+- redis_client: redis.Redis
+  The Redis client instance connected to the Redis server specified by the host, port, and database index.
+
+- oauth2_scheme: OAuth2PasswordBearer
+  The OAuth2 password bearer authentication scheme for validating API keys.
+
+- API_KEYS_PATH: str
+  Path to the file containing valid API keys loaded from the environment variable.
+
+- APP_TITLE: str
+  Title of the FastAPI application loaded from the environment variable.
+
+- APP_DESCRIPTION: str
+  Description of the FastAPI application loaded from the environment variable.
+
+- APP_VERSION: str
+  Version of the FastAPI application loaded from the environment variable.
+
+- REDIS_HOST: str
+  Redis server host loaded from the environment variable.
+
+- REDIS_PORT: int
+  Redis server port loaded from the environment variable.
+
+- REDIS_STORE_DB_INDEX: int
+  Redis database index for storing task information loaded from the environment variable.

@@ -1,0 +1,34 @@
+Module Documentation: celery.py
+
+This module initializes and configures a Celery application for task processing.
+
+Author:
+- Richard Correro (richard@richardcorrero.com)
+
+Variables:
+- CELERY_APP_NAME: str
+  - The name of the Celery application. It is obtained from the environment variable "CELERY_APP_NAME".
+- CELERY_APP_INCLUDE: str
+  - The name of the module or package to include in the Celery application. It is obtained from the environment variable "CELERY_APP_INCLUDE".
+- APP_BROKER_URI: str
+  - The URI of the message broker used by Celery. It is obtained from the environment variable "APP_BROKER_URI".
+- APP_BACKEND_URI: str
+  - The URI of the backend used by Celery for storing task results. It is obtained from the environment variable "APP_BACKEND_URI".
+
+Functions:
+- celery_app.start()
+  - Starts the Celery application.
+
+Classes:
+- celery.Celery
+  - Represents a Celery application for task processing.
+
+Initialization:
+- The Celery application is initialized using the provided CELERY_APP_NAME, APP_BROKER_URI, APP_BACKEND_URI, and CELERY_APP_INCLUDE values.
+- The Celery application is configured with an optional "result_expires" parameter set to 3600 seconds.
+
+Usage:
+- To start the Celery application, run the module as the main script.
+
+Note:
+- Ensure that the required environment variables (CELERY_APP_NAME, CELERY_APP_INCLUDE, APP_BROKER_URI, APP_BACKEND_URI) are properly set before running the script.

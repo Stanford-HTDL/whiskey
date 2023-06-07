@@ -1,0 +1,45 @@
+Module Documentation: utils.py
+
+This module contains utility functions used in various parts of the application.
+
+Author:
+- Richard Correro (richard@richardcorrero.com)
+
+Dependencies:
+- hashlib
+- json
+- random
+- string
+- datetime from datetime
+- List, Optional, Union from typing
+- Inspect from celery.app.control
+- MalformedDateStringError from exceptions (assumed to be defined in a separate file)
+
+Functions:
+- is_task_known(task_id: str, inspect_obj: Inspect) -> bool:
+  This function checks whether a task with the given task ID is known or scheduled for execution.
+  It takes a task ID as a string and an `Inspect` object as parameters.
+  It returns a boolean value indicating whether the task is known or not.
+
+- is_json(json_str: str) -> bool:
+  This function checks whether a given string is a valid JSON.
+  It takes a JSON string as a parameter.
+  It returns a boolean value indicating whether the string is valid JSON or not.
+
+- hash_string(string: str) -> str:
+  This function hashes a given string using the SHA-256 algorithm.
+  It takes a string as a parameter and returns the hashed string as a hexadecimal string.
+
+- get_api_keys(api_keys_path: str) -> List[str]:
+  This function reads a JSON file containing API keys and returns a list of the keys.
+  It takes the path to the JSON file as a parameter and returns a list of API keys.
+
+- generate_uid(uid_len: Optional[int] = 64) -> str:
+  This function generates a unique identifier (UID) of a specified length.
+  It takes an optional parameter `uid_len` to specify the length of the UID.
+  It returns the generated UID as a string.
+
+- get_datetime(time_str: str) -> datetime:
+  This function converts a string representation of time in the format "%Y_%m" to a datetime object.
+  It takes a time string as a parameter and returns a datetime object.
+  If the time string is not in the expected format, it raises a `MalformedDateStringError`.

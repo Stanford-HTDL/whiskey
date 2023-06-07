@@ -1,0 +1,56 @@
+Module Documentation: models.py
+
+This module contains the definition of two Pydantic models: `TargetParams` and `MediaParams`. These models are used to define the request payload for the corresponding endpoints in the FastAPI application.
+
+Author:
+- Richard Correro (richard@richardcorrero.com)
+
+Dependencies:
+- List from typing
+- BaseModel, Field from pydantic
+
+Classes:
+- TargetParams(BaseModel):
+  This class represents the request payload for the "/analyze" endpoint in the FastAPI application.
+  It inherits from the `BaseModel` class provided by Pydantic.
+
+  Attributes:
+  - start: str | None
+    The start month (inclusive) in the format "%Y_%m".
+    It is an optional field with a default value of "2023_01".
+    The field is validated to have a maximum length of 7 and a minimum length of 7.
+
+  - stop: str | None
+    The stop month (exclusive) in the format "%Y_%m".
+    It is an optional field with a default value of "2023_02".
+    The field is validated to have a maximum length of 7 and a minimum length of 7.
+
+  - target_geojsons: List[str] | None
+    A list of GeoJSONs encoded as strings that demarcate the region for analysis.
+    It is an optional field with a default value of [geojson_str], where `geojson_str` is a predefined GeoJSON string.
+    The field represents multiple GeoJSONs, allowing analysis on multiple regions.
+
+  - bbox_threshold: float
+    A value used to determine whether to consider a predicted bounding box as a positive.
+    The value must be in the range [0, 1].
+    It has a default value of 0.95.
+
+- MediaParams(BaseModel):
+  This class represents the request payload for the "/media" endpoint in the FastAPI application.
+  It inherits from the `BaseModel` class provided by Pydantic.
+
+  Attributes:
+  - start: str | None
+    The start month (inclusive) in the format "%Y_%m".
+    It is an optional field with a default value of "2022_01".
+    The field is validated to have a maximum length of 7 and a minimum length of 7.
+
+  - stop: str | None
+    The stop month (exclusive) in the format "%Y_%m".
+    It is an optional field with a default value of "2023_01".
+    The field is validated to have a maximum length of 7 and a minimum length of 7.
+
+  - target_geojsons: List[str] | None
+    A list of GeoJSONs encoded as strings that demarcate the region for which media will be created.
+    It is an optional field with a default value of [geojson_str], where `geojson_str` is a predefined GeoJSON string.
+    The field represents multiple GeoJSONs, allowing media creation for multiple regions.

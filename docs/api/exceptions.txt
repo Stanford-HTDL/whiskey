@@ -1,0 +1,15 @@
+Module Documentation: exceptions.py
+
+This module defines custom exception classes used in the application.
+
+Author:
+- Richard Correro (richard@richardcorrero.com)
+
+Classes:
+- MalformedDateStringError(Exception):
+  This exception class is raised when a time string is in an unexpected or malformed format.
+  It inherits from the base `Exception` class.
+
+- IDNotFoundError(Exception):
+  This exception class is raised when an ID is not found or does not exist.
+  It inherits from the base `Exception` class.
